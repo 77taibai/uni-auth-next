@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { api } from "./helpers";
+import { api } from "./helpers.js";
 
 describe("pages", () => {
   it("GET / for non-HTML client 308 → /auth", async () => {
@@ -28,7 +28,7 @@ describe("pages", () => {
   });
 
   it("GET /admin serves the console when authenticated", async () => {
-    const { authenticatedCookie } = await import("./helpers");
+    const { authenticatedCookie } = await import("./helpers.js");
     const cookie = await authenticatedCookie();
     const res = await api.get("/admin").set("cookie", cookie).redirects(0);
     expect(res.status).toBe(200);

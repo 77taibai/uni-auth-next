@@ -1,11 +1,11 @@
 import type { Request, RequestHandler, Response } from "express";
-import type { AppConfig } from "../../config/env";
-import { renderView } from "../../config/paths";
-import { isInitialized, setup } from "../../services/setupService";
-import { markAuthenticated, startSession } from "../../services/sessionService";
-import { setSessionCookie } from "../middleware/cookies";
-import { parseBody, setupSchema } from "../validators/schemas";
-import { wrapHandlers } from "../middleware/async";
+import type { AppConfig } from "../../config/env.js";
+import { renderView } from "../../config/paths.js";
+import { isInitialized, setup } from "../../services/setupService.js";
+import { markAuthenticated, startSession } from "../../services/sessionService.js";
+import { setSessionCookie } from "../middleware/cookies.js";
+import { parseBody, setupSchema } from "../validators/schemas.js";
+import { wrapHandlers } from "../middleware/async.js";
 
 export function setupController(config: AppConfig) {
   return wrapHandlers({

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { AppConfig } from "../../config/env";
-import { pageController } from "../controllers/pageController";
-import { requireAuthPage } from "../middleware/auth";
+import type { AppConfig } from "../../config/env.js";
+import { pageController } from "../controllers/pageController.js";
+import { requireAuthPage } from "../middleware/auth.js";
 
 /** 页面路由（文档 6.1） */
 export function pageRoutes(): Router {

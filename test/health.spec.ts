@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { api } from "./helpers";
+import { api } from "./helpers.js";
 
 it("GET /health returns ok", async () => {
   const res = await api.get("/health");

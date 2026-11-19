@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { query } from "../src/db/pool";
+import { query } from "../src/db/pool.js";
 
 const TABLES = [
   "admin_profile",

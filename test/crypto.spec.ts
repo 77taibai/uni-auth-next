@@ -10,7 +10,7 @@ import {
   timingSafeEqual,
   toB64Url,
   verifyPassword,
-} from "../src/security/crypto";
+} from "../src/security/crypto.js";
 
 describe("pbkdf2", () => {
   it("hash/verify roundtrip with versioned format", () => {

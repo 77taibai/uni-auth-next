@@ -1,18 +1,18 @@
-import { displayNameOf, type Identity } from "../config/identity";
-import { getConfirmedTotp } from "../db/repositories/totpRepository";
-import { getProfile } from "../db/repositories/profileRepository";
-import { verifyPassword } from "../security/crypto";
-import { decryptTotpSecret } from "../security/encryption";
-import { verifyTotp } from "../security/totp";
-import { clearFailures, isLocked, recordFailure } from "../db/repositories/rateLimitRepository";
-import type { AppConfig } from "../config/env";
+import { displayNameOf, type Identity } from "../config/identity.js";
+import { getConfirmedTotp } from "../db/repositories/totpRepository.js";
+import { getProfile } from "../db/repositories/profileRepository.js";
+import { verifyPassword } from "../security/crypto.js";
+import { decryptTotpSecret } from "../security/encryption.js";
+import { verifyTotp } from "../security/totp.js";
+import { clearFailures, isLocked, recordFailure } from "../db/repositories/rateLimitRepository.js";
+import type { AppConfig } from "../config/env.js";
 import {
   markAuthenticated,
   markPasswordOk,
   setPersistence,
   startSession,
   type LoginSession,
-} from "./sessionService";
+} from "./sessionService.js";
 
 export type LoginOutcome =
   | { kind: "failed"; error: "locked"; status: 429 }

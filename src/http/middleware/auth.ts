@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import type { AppConfig } from "../../config/env";
-import { SESSION_COOKIE, findSession, type LoginSession } from "../../services/sessionService";
+import type { AppConfig } from "../../config/env.js";
+import { SESSION_COOKIE, findSession, type LoginSession } from "../../services/sessionService.js";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

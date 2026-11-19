@@ -1,5 +1,5 @@
-import type { AppConfig } from "../../config/env";
-import { SESSION_COOKIE, PERSISTENT_COOKIE_MAX_AGE_MS } from "../../services/sessionService";
+import type { AppConfig } from "../../config/env.js";
+import { SESSION_COOKIE, PERSISTENT_COOKIE_MAX_AGE_MS } from "../../services/sessionService.js";
 import type { Response } from "express";
 
 /** 按登录方式写入会话 Cookie：永久登录带 maxAge，单次登录为浏览器会话级 */

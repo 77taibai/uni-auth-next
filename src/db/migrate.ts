@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { getPool } from "./pool";
+import { getPool } from "./pool.js";
 
 const MIGRATIONS_DIR = fileURLToPath(new URL("./migrations", import.meta.url));
 

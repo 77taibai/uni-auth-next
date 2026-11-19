@@ -1,4 +1,4 @@
-import type { AppConfig } from "../config/env";
+import type { AppConfig } from "../config/env.js";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
@@ -7,21 +7,21 @@ import {
   type AuthenticationResponseJSON,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
-import { fromB64Url, randomToken, toB64Url } from "../security/crypto";
+import { fromB64Url, randomToken, toB64Url } from "../security/crypto.js";
 import {
   createPasskey,
   getPasskeyByCredentialId,
   listPasskeys,
   updatePasskeyCounter,
-} from "../db/repositories/passkeyRepository";
-import { createChallenge, takeChallenge } from "../db/repositories/challengeRepository";
-import { clearFailures, isLocked, recordFailure } from "../db/repositories/rateLimitRepository";
+} from "../db/repositories/passkeyRepository.js";
+import { createChallenge, takeChallenge } from "../db/repositories/challengeRepository.js";
+import { clearFailures, isLocked, recordFailure } from "../db/repositories/rateLimitRepository.js";
 import {
   markAuthenticated,
   setPersistence,
   startSession,
   type LoginSession,
-} from "./sessionService";
+} from "./sessionService.js";
 
 export function rpContext(publicOrigin: string): { rpID: string; origin: string } {
   const u = new URL(publicOrigin);

@@ -1,7 +1,7 @@
 import { beforeAll, afterAll } from "vitest";
-import { closePool } from "../src/db/pool";
-import { runMigrations, truncateAll } from "../src/db/migrate";
-import { ensureProfile } from "./helpers";
+import { closePool } from "../src/db/pool.js";
+import { runMigrations, truncateAll } from "../src/db/migrate.js";
+import { ensureProfile } from "./helpers.js";
 
 /**
  * 每个测试文件都从干净数据库开始，并预置一份管理员身份

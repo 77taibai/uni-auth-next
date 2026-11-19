@@ -176,6 +176,20 @@ npm test
 3. 使用 Vercel / 自定义域名作为 `PUBLIC_ORIGIN`；不要用 Preview 域名作为生产 issuer。
 4. HTTPS 由平台终止，应用按 `PUBLIC_ORIGIN` 生成 issuer，并正确处理代理协议。
 
+### ESM 导入必须带 `.js` 扩展名
+
+项目是 `"type": "module"`，Vercel 的 Node 运行时按原生 ESM 解析，**不会**自动补全扩展名。
+因此所有相对导入都要写成编译后的文件名：
+
+```ts
+import { createApp } from "./app.js";        // 源码是 app.ts，但必须写 .js
+import { PUBLIC_DIR } from "./config/assets.js";
+```
+
+`tsconfig.json` 使用 `module`/`moduleResolution` = `NodeNext`，缺失扩展名会直接在
+`npm run typecheck` 阶段报错，避免部署后才出现 `ERR_MODULE_NOT_FOUND`。
+`tsx`、`vitest`、`tsc` 都会把 `.js` 映射回 `.ts`，因此本地开发与测试不受影响。
+
 ### 路由与静态资源
 
 `vercel.json` 把以下路径重写到单一函数 `api/index.ts`：`/api/*`、`/oauth/*`、`/.well-known/*`、

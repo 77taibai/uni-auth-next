@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /** 本地开发/脚本/测试时加载 .env；Vercel 由平台注入，无 .env 时静默跳过 */
@@ -13,7 +13,6 @@ export function loadDotenv(): void {
       /* fall through */
     }
   }
-  const { readFileSync } = require("node:fs") as typeof import("node:fs");
   for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
     const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(line);
     if (!match) continue;

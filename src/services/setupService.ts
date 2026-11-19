@@ -1,6 +1,6 @@
-import type { AppConfig } from "../config/env";
-import { createProfile, getProfile } from "../db/repositories/profileRepository";
-import { hashPassword } from "../security/crypto";
+import type { AppConfig } from "../config/env.js";
+import { createProfile, getProfile } from "../db/repositories/profileRepository.js";
+import { hashPassword } from "../security/crypto.js";
 
 export const MIN_PASSWORD_LENGTH = 8;
 

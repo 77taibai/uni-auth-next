@@ -2,17 +2,17 @@ import express, { type NextFunction, type Request, type Response } from "express
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { randomUUID } from "node:crypto";
-import type { AppConfig } from "./config/env";
-import { PUBLIC_DIR } from "./config/assets";
-import { loadSession, requireAuthPage, resolveClientIp } from "./http/middleware/auth";
-import { requestLogger } from "./http/middleware/logging";
-import { healthRoutes } from "./http/routes/healthRoutes";
-import { oauthRoutes, legacyOidcRoutes } from "./http/routes/oauthRoutes";
-import { setupRoutes } from "./http/routes/setupRoutes";
-import { sessionRoutes } from "./http/routes/sessionRoutes";
-import { adminRoutes } from "./http/routes/adminRoutes";
-import { pageRoutes } from "./http/routes/pageRoutes";
-import { errorPage } from "./views/pages";
+import type { AppConfig } from "./config/env.js";
+import { PUBLIC_DIR } from "./config/assets.js";
+import { loadSession, requireAuthPage, resolveClientIp } from "./http/middleware/auth.js";
+import { requestLogger } from "./http/middleware/logging.js";
+import { healthRoutes } from "./http/routes/healthRoutes.js";
+import { oauthRoutes, legacyOidcRoutes } from "./http/routes/oauthRoutes.js";
+import { setupRoutes } from "./http/routes/setupRoutes.js";
+import { sessionRoutes } from "./http/routes/sessionRoutes.js";
+import { adminRoutes } from "./http/routes/adminRoutes.js";
+import { pageRoutes } from "./http/routes/pageRoutes.js";
+import { errorPage } from "./views/pages.js";
 
 export function createApp(config: AppConfig): express.Express {
   const app = express();

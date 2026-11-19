@@ -1,9 +1,9 @@
 import type { Request, RequestHandler, Response } from "express";
-import { renderView } from "../../config/paths";
-import { errorPage } from "../../views/pages";
-import { isInitialized } from "../../services/setupService";
-import { getAuthRequest } from "../../db/repositories/authRequestRepository";
-import { wrapHandlers } from "../middleware/async";
+import { renderView } from "../../config/paths.js";
+import { errorPage } from "../../views/pages.js";
+import { isInitialized } from "../../services/setupService.js";
+import { getAuthRequest } from "../../db/repositories/authRequestRepository.js";
+import { wrapHandlers } from "../middleware/async.js";
 
 /** 页面路由：浏览器命中页面；根路径对非 HTML 客户端 308 到 discovery */
 export function pageController() {

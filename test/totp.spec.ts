@@ -1,10 +1,10 @@
 import { Secret, TOTP } from "otpauth";
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, TEST_PASSWORD, authenticatedCookie, ensureProfile } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
-import { generateTotpSecret, verifyTotp } from "../src/security/totp";
-import { query } from "../src/db/pool";
-import { clearFailures } from "../src/db/repositories/rateLimitRepository";
+import { api, ORIGIN, TEST_PASSWORD, authenticatedCookie, ensureProfile } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
+import { generateTotpSecret, verifyTotp } from "../src/security/totp.js";
+import { query } from "../src/db/pool.js";
+import { clearFailures } from "../src/db/repositories/rateLimitRepository.js";
 
 function gen(secretB32: string, offsetMs = 0): string {
   return new TOTP({

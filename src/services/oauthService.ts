@@ -1,21 +1,21 @@
-import { displayNameOf } from "../config/identity";
-import { getClientByClientId, type ClientRow } from "../db/repositories/clientRepository";
+import { displayNameOf } from "../config/identity.js";
+import { getClientByClientId, type ClientRow } from "../db/repositories/clientRepository.js";
 import {
   createAuthRequest,
   getAuthRequest,
   consumeAuthRequest,
   type OidcAuthRequestRow,
-} from "../db/repositories/authRequestRepository";
-import { createAuthorizationCode, consumeAuthorizationCode } from "../db/repositories/authorizationCodeRepository";
+} from "../db/repositories/authRequestRepository.js";
+import { createAuthorizationCode, consumeAuthorizationCode } from "../db/repositories/authorizationCodeRepository.js";
 import {
   createAccessToken,
   getAccessToken,
   ACCESS_TOKEN_TTL_SECONDS,
-} from "../db/repositories/accessTokenRepository";
-import { getProfile } from "../db/repositories/profileRepository";
-import { randomToken, sha256, sha256Async, stringsEqual } from "../security/crypto";
-import { signIdToken } from "../security/jwt";
-import type { AppConfig } from "../config/env";
+} from "../db/repositories/accessTokenRepository.js";
+import { getProfile } from "../db/repositories/profileRepository.js";
+import { randomToken, sha256, sha256Async, stringsEqual } from "../security/crypto.js";
+import { signIdToken } from "../security/jwt.js";
+import type { AppConfig } from "../config/env.js";
 
 export const SUPPORTED_SCOPES = ["openid", "profile", "email"] as const;
 

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createLocalJWKSet, jwtVerify } from "jose";
-import { api, ORIGIN, authenticatedCookie, seedClient, ensureProfile } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
-import { createAuthorizationCode } from "../src/db/repositories/authorizationCodeRepository";
-import { sha256 } from "../src/security/crypto";
+import { api, ORIGIN, authenticatedCookie, seedClient, ensureProfile } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
+import { createAuthorizationCode } from "../src/db/repositories/authorizationCodeRepository.js";
+import { sha256 } from "../src/security/crypto.js";
 
 const CB = "https://app.example.com/cb";
 const VERIFIER = "unit-test-verifier-unit-test-verifier-0123456789";

@@ -1,11 +1,11 @@
 import type { Request, RequestHandler, Response } from "express";
-import type { AppConfig } from "../../config/env";
-import { renderView } from "../../config/paths";
-import { authorize, consent, discoveryDocument, getAuthRequestInfo, issueTokens, userinfo } from "../../services/oauthService";
-import { getSigningKey, publicJwks } from "../../security/jwt";
-import { errorPage } from "../../views/pages";
-import { tokenRequestSchema, consentSchema, parseBody } from "../validators/schemas";
-import { wrapHandlers } from "../middleware/async";
+import type { AppConfig } from "../../config/env.js";
+import { renderView } from "../../config/paths.js";
+import { authorize, consent, discoveryDocument, getAuthRequestInfo, issueTokens, userinfo } from "../../services/oauthService.js";
+import { getSigningKey, publicJwks } from "../../security/jwt.js";
+import { errorPage } from "../../views/pages.js";
+import { tokenRequestSchema, consentSchema, parseBody } from "../validators/schemas.js";
+import { wrapHandlers } from "../middleware/async.js";
 
 const NO_STORE = { "Cache-Control": "no-store", Pragma: "no-cache" };
 

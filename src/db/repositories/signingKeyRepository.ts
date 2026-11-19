@@ -1,5 +1,5 @@
 import type { JWK } from "jose";
-import { query } from "../pool";
+import { query } from "../pool.js";
 
 export type SigningKeyRow = {
   id: boolean;

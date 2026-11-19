@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { AppConfig } from "../../config/env";
-import { oauthController } from "../controllers/oauthController";
+import type { AppConfig } from "../../config/env.js";
+import { oauthController } from "../controllers/oauthController.js";
 
 /** 标准 OAuth/OIDC 根级路由（文档 6.3） */
 export function oauthRoutes(config: AppConfig): Router {

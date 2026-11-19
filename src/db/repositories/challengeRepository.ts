@@ -1,4 +1,4 @@
-import { withTransaction } from "../pool";
+import { withTransaction } from "../pool.js";
 
 export type ChallengeKind = "register" | "login";
 

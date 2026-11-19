@@ -1,19 +1,19 @@
-import { wrapHandlers } from "../middleware/async";
+import { wrapHandlers } from "../middleware/async.js";
 import type { Request, RequestHandler, Response } from "express";
-import type { AppConfig } from "../../config/env";
-import type { LoginSession } from "../../services/sessionService";
-import { parseBody, passwordLoginSchema, totpLoginSchema, passkeyVerifySchema } from "../validators/schemas";
-import { clearSessionCookie, setSessionCookie } from "../middleware/cookies";
+import type { AppConfig } from "../../config/env.js";
+import type { LoginSession } from "../../services/sessionService.js";
+import { parseBody, passwordLoginSchema, totpLoginSchema, passkeyVerifySchema } from "../validators/schemas.js";
+import { clearSessionCookie, setSessionCookie } from "../middleware/cookies.js";
 import {
   completeTotpLogin,
   loginWithPassword,
-} from "../../services/authService";
+} from "../../services/authService.js";
 import {
   authenticationOptions,
   loginWithPasskey,
-} from "../../services/webauthnService";
-import { destroySession, findSession } from "../../services/sessionService";
-import { SESSION_COOKIE } from "../../services/sessionService";
+} from "../../services/webauthnService.js";
+import { destroySession, findSession } from "../../services/sessionService.js";
+import { SESSION_COOKIE } from "../../services/sessionService.js";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
 
 export function sessionController(config: AppConfig){

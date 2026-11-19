@@ -1,6 +1,6 @@
-import { createApp } from "./app";
-import { loadDotenv } from "./config/dotenv";
-import { loadConfig } from "./config/env";
+import { createApp } from "./app.js";
+import { loadDotenv } from "./config/dotenv.js";
+import { loadConfig } from "./config/env.js";
 
 // 本地开发入口：Vercel 不会调用 listen
 loadDotenv();

@@ -1,13 +1,13 @@
 import { renderSVG } from "uqr";
-import type { AppConfig } from "../config/env";
+import type { AppConfig } from "../config/env.js";
 import {
   confirmTotp,
   deleteTotp,
   getTotp,
   upsertPendingTotp,
-} from "../db/repositories/totpRepository";
-import { decryptTotpSecret, encryptTotpSecret } from "../security/encryption";
-import { generateTotpSecret, totpUri, verifyTotp } from "../security/totp";
+} from "../db/repositories/totpRepository.js";
+import { decryptTotpSecret, encryptTotpSecret } from "../security/encryption.js";
+import { generateTotpSecret, totpUri, verifyTotp } from "../security/totp.js";
 
 export type EnrollResult = { uri: string; secret: string; svg: string };
 

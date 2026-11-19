@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { AppConfig } from "../../config/env";
-import { adminController } from "../controllers/adminController";
-import { requireAuthApi, requireOrigin } from "../middleware/auth";
+import type { AppConfig } from "../../config/env.js";
+import { adminController } from "../controllers/adminController.js";
+import { requireAuthApi, requireOrigin } from "../middleware/auth.js";
 
 /** 管理台 API：Origin 校验 + 完全认证会话 guard（文档 6.2） */
 export function adminRoutes(config: AppConfig): Router {

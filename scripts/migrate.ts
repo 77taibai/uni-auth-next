@@ -1,6 +1,6 @@
-import { closePool } from "../src/db/pool";
-import { loadDotenv } from "../src/config/dotenv";
-import { runMigrations } from "../src/db/migrate";
+import { closePool } from "../src/db/pool.js";
+import { loadDotenv } from "../src/config/dotenv.js";
+import { runMigrations } from "../src/db/migrate.js";
 
 /** 只依赖 DATABASE_URL；可在 CI / Vercel 构建期执行 */
 async function main(): Promise<void> {

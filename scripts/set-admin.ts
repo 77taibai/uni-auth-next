@@ -1,8 +1,8 @@
-import { closePool } from "../src/db/pool";
-import { loadDotenv } from "../src/config/dotenv";
-import { loadConfig } from "../src/config/env";
-import { createProfile, updateProfile, updatePasswordHash, getProfile } from "../src/db/repositories/profileRepository";
-import { PASSWORD_HASH_RE } from "../src/config/env";
+import { closePool } from "../src/db/pool.js";
+import { loadDotenv } from "../src/config/dotenv.js";
+import { loadConfig } from "../src/config/env.js";
+import { createProfile, updateProfile, updatePasswordHash, getProfile } from "../src/db/repositories/profileRepository.js";
+import { PASSWORD_HASH_RE } from "../src/config/env.js";
 
 /**
  * 初始化/更新管理员身份（写入数据库 admin_profile）。
@@ -39,7 +39,7 @@ async function main(): Promise<void> {
 
   if (!existing) {
     if (!args.password) throw new Error("no profile yet: provide --password to initialize");
-    const { hashPassword } = await import("../src/security/crypto");
+    const { hashPassword } = await import("../src/security/crypto.js");
     await createProfile({
       subject: args.subject ?? "me",
       displayName: args.name ?? "管理员",
@@ -60,7 +60,7 @@ async function main(): Promise<void> {
 
   if (args.password) {
     if (!args.reset) throw new Error("use --reset together with --password to change the password");
-    const { hashPassword } = await import("../src/security/crypto");
+    const { hashPassword } = await import("../src/security/crypto.js");
     if (!PASSWORD_HASH_RE.test(existing.password_hash)) throw new Error("existing password_hash is malformed");
     await updatePasswordHash(hashPassword(args.password, config.pbkdf2Iterations));
     console.log("password updated");

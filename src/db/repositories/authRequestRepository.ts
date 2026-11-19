@@ -1,4 +1,4 @@
-import { query, withTransaction } from "../pool";
+import { query, withTransaction } from "../pool.js";
 
 export type OidcAuthRequestRow = {
   id: string;

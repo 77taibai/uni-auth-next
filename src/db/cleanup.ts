@@ -1,8 +1,8 @@
-import { deleteExpiredSessions } from "./repositories/sessionRepository";
-import { deleteExpiredAuthRequests } from "./repositories/authRequestRepository";
-import { deleteExpiredAuthorizationCodes } from "./repositories/authorizationCodeRepository";
-import { deleteExpiredAccessTokens } from "./repositories/accessTokenRepository";
-import { query } from "./pool";
+import { deleteExpiredSessions } from "./repositories/sessionRepository.js";
+import { deleteExpiredAuthRequests } from "./repositories/authRequestRepository.js";
+import { deleteExpiredAuthorizationCodes } from "./repositories/authorizationCodeRepository.js";
+import { deleteExpiredAccessTokens } from "./repositories/accessTokenRepository.js";
+import { query } from "./pool.js";
 
 /**
  * 清理过期行。Vercel 没有可靠的常驻定时任务，因此采用

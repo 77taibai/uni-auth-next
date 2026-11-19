@@ -1,10 +1,10 @@
 import request from "supertest";
-import { createApp } from "../src/app";
-import { loadConfig, resetConfigCache } from "../src/config/env";
-import { createSession } from "../src/db/repositories/sessionRepository";
-import { createClient } from "../src/db/repositories/clientRepository";
-import { createProfile } from "../src/db/repositories/profileRepository";
-import { hashPassword, sha256, randomToken } from "../src/security/crypto";
+import { createApp } from "../src/app.js";
+import { loadConfig, resetConfigCache } from "../src/config/env.js";
+import { createSession } from "../src/db/repositories/sessionRepository.js";
+import { createClient } from "../src/db/repositories/clientRepository.js";
+import { createProfile } from "../src/db/repositories/profileRepository.js";
+import { hashPassword, sha256, randomToken } from "../src/security/crypto.js";
 
 export const ORIGIN = "http://localhost:3000";
 export const TEST_PASSWORD = "correct horse";

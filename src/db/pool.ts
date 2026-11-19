@@ -1,6 +1,6 @@
 import pg from "pg";
-import { getConfig } from "../config/env";
-import { databaseUrlFromEnv } from "../config/dotenv";
+import { getConfig } from "../config/env.js";
+import { databaseUrlFromEnv } from "../config/dotenv.js";
 
 const { Pool } = pg;
 

@@ -1,6 +1,6 @@
 import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/server";
 import type { webcrypto } from "node:crypto";
-import { fromB64Url, toB64Url } from "../src/security/crypto";
+import { fromB64Url, toB64Url } from "../src/security/crypto.js";
 
 /**
  * 最小虚拟认证器：生成 ES256 密钥对，构造 "none" attestation 与 assertion。

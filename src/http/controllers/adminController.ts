@@ -1,15 +1,15 @@
-import { wrapHandlers } from "../middleware/async";
+import { wrapHandlers } from "../middleware/async.js";
 import type { Request, RequestHandler, Response } from "express";
-import type { AppConfig } from "../../config/env";
-import { displayNameOf } from "../../config/identity";
-import { listPasskeys, renamePasskey, deletePasskey, getPasskeyById } from "../../db/repositories/passkeyRepository";
-import { listClients, getClientById, createClient, updateClientName, updateClientRedirectUris, deleteClient } from "../../db/repositories/clientRepository";
-import { getProfile, updateProfile, updatePasswordHash } from "../../db/repositories/profileRepository";
-import { randomAlphanumeric, hashPassword, verifyPassword } from "../../security/crypto";
-import { beginEnrollment, confirmEnrollment, disable, isEnabled as totpEnabled } from "../../services/totpService";
-import { registrationOptions, registerPasskey } from "../../services/webauthnService";
-import { destroySession } from "../../services/sessionService";
-import { clearSessionCookie } from "../middleware/cookies";
+import type { AppConfig } from "../../config/env.js";
+import { displayNameOf } from "../../config/identity.js";
+import { listPasskeys, renamePasskey, deletePasskey, getPasskeyById } from "../../db/repositories/passkeyRepository.js";
+import { listClients, getClientById, createClient, updateClientName, updateClientRedirectUris, deleteClient } from "../../db/repositories/clientRepository.js";
+import { getProfile, updateProfile, updatePasswordHash } from "../../db/repositories/profileRepository.js";
+import { randomAlphanumeric, hashPassword, verifyPassword } from "../../security/crypto.js";
+import { beginEnrollment, confirmEnrollment, disable, isEnabled as totpEnabled } from "../../services/totpService.js";
+import { registrationOptions, registerPasskey } from "../../services/webauthnService.js";
+import { destroySession } from "../../services/sessionService.js";
+import { clearSessionCookie } from "../middleware/cookies.js";
 import {
   parseBody,
   clientCreateSchema,
@@ -19,7 +19,7 @@ import {
   passkeyRenameSchema,
   profileUpdateSchema,
   passwordChangeSchema,
-} from "../validators/schemas";
+} from "../validators/schemas.js";
 import type { RegistrationResponseJSON } from "@simplewebauthn/server";
 
 export function adminController(config: AppConfig){

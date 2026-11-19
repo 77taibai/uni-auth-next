@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, authenticatedCookie } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
-import { clearFailures } from "../src/db/repositories/rateLimitRepository";
-import { query } from "../src/db/pool";
-import { VirtualAuthenticator } from "./webauthn-emulator";
-import { toB64Url } from "../src/security/crypto";
+import { api, ORIGIN, authenticatedCookie } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
+import { clearFailures } from "../src/db/repositories/rateLimitRepository.js";
+import { query } from "../src/db/pool.js";
+import { VirtualAuthenticator } from "./webauthn-emulator.js";
+import { toB64Url } from "../src/security/crypto.js";
 
 const RP_ID = "localhost";
 

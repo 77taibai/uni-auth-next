@@ -1,6 +1,6 @@
 import { exportJWK, generateKeyPair, importJWK, type JWK, SignJWT } from "jose";
-import { randomToken } from "./crypto";
-import { getSigningKeyRow, insertSigningKey } from "../db/repositories/signingKeyRepository";
+import { randomToken } from "./crypto.js";
+import { getSigningKeyRow, insertSigningKey } from "../db/repositories/signingKeyRepository.js";
 
 /**
  * ES256 签名密钥：首次使用时生成并持久化到 PostgreSQL（单行）。

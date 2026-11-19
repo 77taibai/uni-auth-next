@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, TEST_PASSWORD, ensureProfile } from "./helpers";
-import { clearFailures } from "../src/db/repositories/rateLimitRepository";
-import { truncateAll } from "../src/db/migrate";
+import { api, ORIGIN, TEST_PASSWORD, ensureProfile } from "./helpers.js";
+import { clearFailures } from "../src/db/repositories/rateLimitRepository.js";
+import { truncateAll } from "../src/db/migrate.js";
 
 beforeEach(async () => {
   await truncateAll();

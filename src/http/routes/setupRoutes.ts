@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { AppConfig } from "../../config/env";
-import { setupController } from "../controllers/setupController";
-import { requireOrigin } from "../middleware/auth";
+import type { AppConfig } from "../../config/env.js";
+import { setupController } from "../controllers/setupController.js";
+import { requireOrigin } from "../middleware/auth.js";
 
 /** 首次初始化：/setup 页面与一次性创建 API */
 export function setupRoutes(config: AppConfig): Router {

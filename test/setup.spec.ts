@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, ensureProfile, CLIENT_COOKIE } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
-import { getProfile } from "../src/db/repositories/profileRepository";
-import { query } from "../src/db/pool";
-import { createAuthRequest } from "../src/db/repositories/authRequestRepository";
-import { createClient } from "../src/db/repositories/clientRepository";
+import { api, ORIGIN, ensureProfile, CLIENT_COOKIE } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
+import { getProfile } from "../src/db/repositories/profileRepository.js";
+import { query } from "../src/db/pool.js";
+import { createAuthRequest } from "../src/db/repositories/authRequestRepository.js";
+import { createClient } from "../src/db/repositories/clientRepository.js";
 
 const CB = "https://app.example.com/cb";
 

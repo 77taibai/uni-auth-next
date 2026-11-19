@@ -1,4 +1,4 @@
-import { query } from "../pool";
+import { query } from "../pool.js";
 
 /** 连续失败 MAX_FAILURES 次 → 锁定 LOCK_SECONDS 秒；失败即续期 */
 const MAX_FAILURES = 5;

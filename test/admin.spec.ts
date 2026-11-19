@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, authenticatedCookie, ensureProfile } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
-import { createPasskey } from "../src/db/repositories/passkeyRepository";
+import { api, ORIGIN, authenticatedCookie, ensureProfile } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
+import { createPasskey } from "../src/db/repositories/passkeyRepository.js";
 
 function post(path: string, body: unknown, cookie?: string) {
   const req = api.post(path).set("content-type", "application/json").set("origin", ORIGIN).send(body as object);

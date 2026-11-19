@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { api, ORIGIN, challengeFor, seedClient, authenticatedCookie, authorize, ensureProfile } from "./helpers";
-import { truncateAll } from "../src/db/migrate";
+import { api, ORIGIN, challengeFor, seedClient, authenticatedCookie, authorize, ensureProfile } from "./helpers.js";
+import { truncateAll } from "../src/db/migrate.js";
 
 const CB = "https://app.example.com/cb";
 const VERIFIER = "unit-test-verifier-unit-test-verifier-0123456789";

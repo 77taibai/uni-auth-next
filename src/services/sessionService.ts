@@ -1,4 +1,4 @@
-import { randomToken } from "../security/crypto";
+import { randomToken } from "../security/crypto.js";
 import {
   createSession,
   deleteSession,
@@ -6,8 +6,8 @@ import {
   setSessionPersistence,
   updateSession,
   type SessionRow,
-} from "../db/repositories/sessionRepository";
-import { cleanupExpired } from "../db/cleanup";
+} from "../db/repositories/sessionRepository.js";
+import { cleanupExpired } from "../db/cleanup.js";
 
 export const SESSION_COOKIE = "uni_auth_sid";
 /** 永久登录 Cookie 有效期：一年 */

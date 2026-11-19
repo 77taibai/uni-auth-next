@@ -1,5 +1,5 @@
 import type { webcrypto } from "node:crypto";
-import { aesDecrypt, aesEncrypt, importMasterKey } from "./crypto";
+import { aesDecrypt, aesEncrypt, importMasterKey } from "./crypto.js";
 
 type CryptoKey = webcrypto.CryptoKey;
 
