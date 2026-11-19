@@ -1,5 +1,5 @@
-import express, { type NextFunction, type Request, type Response } from "express";
-import helmet from "helmet";
+import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
+import helmet, { type HelmetOptions } from "helmet";
 import cookieParser from "cookie-parser";
 import { randomUUID } from "node:crypto";
 import type { AppConfig } from "./config/env.js";
@@ -13,6 +13,13 @@ import { sessionRoutes } from "./http/routes/sessionRoutes.js";
 import { adminRoutes } from "./http/routes/adminRoutes.js";
 import { pageRoutes } from "./http/routes/pageRoutes.js";
 import { errorPage } from "./views/pages.js";
+
+/**
+ * helmet 是双包（index.d.cts / index.d.mts）且 exports 未声明 types 条件，
+ * 部分构建环境会把 default 导入解析为模块命名空间（不可调用）。
+ * 这里显式收窄为调用签名，不依赖 esModuleInterop 的 default 互操作。
+ */
+const createHelmet = helmet as unknown as (options?: HelmetOptions) => RequestHandler;
 
 export function createApp(config: AppConfig): express.Express {
   const app = express();
@@ -29,7 +36,7 @@ export function createApp(config: AppConfig): express.Express {
   app.use(requestLogger());
 
   app.use(
-    helmet({
+    createHelmet({
       contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false,
     })
