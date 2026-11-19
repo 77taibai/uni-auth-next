@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>初始化 · 大一统登录</title>
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="page-auth">
+<main>
+<form id="f">
+  <p class="eyebrow">FIRST RUN</p>
+  <h1>建立你的身份中枢</h1>
+  <p class="muted">首次使用，请设置管理员密码（至少 8 位）。</p>
+  <input type="password" name="password" placeholder="密码" minlength="8" required>
+  <button type="submit" class="save-button">创建</button>
+  <p id="msg" class="err"></p>
+</form>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const REQ = new URLSearchParams(location.search).get("req");
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("msg").textContent = "";
+  try {
+    await api("/api/v1/setup", { password: e.target.password.value });
+    location.href = REQ ? "/oauth/consent?req=" + encodeURIComponent(REQ) : "/admin";
+  } catch (err) {
+    $("msg").textContent = { weak_password: "密码太短（至少 8 位）", already_setup: "已初始化" }[err.message] || "失败：" + err.message;
+  }
+});
+</script>
+</body>
+</html>
+

@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>管理 · 大一统登录</title>
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="page-admin">
+<main>
+<div class="admin-topbar">
+  <form id="lo"><button type="submit" class="muted-btn logout-button">退出登录</button></form>
+</div>
+<p class="eyebrow">IDENTITY ADMINISTRATION</p>
+<h1>管理控制台</h1>
+<p class="muted">管理登录方式、第二因素与 OIDC 应用。</p>
+
+<nav class="admin-tabs" aria-label="管理模块" role="tablist">
+  <button type="button" class="admin-tab" id="apps-tab" role="tab" aria-selected="true" aria-controls="apps-panel" data-tab="apps">
+    <span>应用管理</span><small>OIDC 客户端与回调</small>
+  </button>
+  <button type="button" class="admin-tab" id="profile-tab" role="tab" aria-selected="false" aria-controls="profile-panel" data-tab="profile" tabindex="-1">
+    <span>个人信息</span><small>显示名与邮箱</small>
+  </button>
+  <button type="button" class="admin-tab" id="login-tab" role="tab" aria-selected="false" aria-controls="login-panel" data-tab="login" tabindex="-1">
+    <span>登录管理</span><small>密码、Passkey、TOTP</small>
+  </button>
+</nav>
+
+<div id="login-panel" class="admin-panel" role="tabpanel" aria-labelledby="login-tab" hidden>
+<nav class="admin-subtabs" aria-label="登录管理模块" role="tablist">
+  <button type="button" class="admin-subtab" id="password-subtab" role="tab" aria-selected="true" aria-controls="password-panel" data-subtab="password">
+    <span>密码</span><small>修改管理员密码</small>
+  </button>
+  <button type="button" class="admin-subtab" id="passkey-subtab" role="tab" aria-selected="false" aria-controls="passkey-panel" data-subtab="passkey" tabindex="-1">
+    <span>通行密钥</span><small>Passkey 登录设备</small>
+  </button>
+  <button type="button" class="admin-subtab" id="totp-subtab" role="tab" aria-selected="false" aria-controls="totp-panel" data-subtab="totp" tabindex="-1">
+    <span>TOTP</span><small>动态验证码</small>
+  </button>
+</nav>
+<div id="password-panel" class="admin-subpanel" role="tabpanel" aria-labelledby="password-subtab">
+<section><h2>密码</h2>
+<form id="pw-f">
+  <input type="password" name="old" placeholder="当前密码" required autocomplete="current-password">
+  <input type="password" name="nw" placeholder="新密码（至少 8 位）" minlength="8" required autocomplete="new-password">
+  <button type="submit" class="save-button">修改密码</button>
+  <p class="muted">修改成功后当前会话失效，需重新登录。</p>
+</form>
+</section>
+</div>
+
+<div id="passkey-panel" class="admin-subpanel" role="tabpanel" aria-labelledby="passkey-subtab" hidden>
+<section><h2>Passkey</h2>
+<button type="button" id="pk-add" class="save-button">注册新 Passkey</button>
+<table id="pk-list"></table>
+</section>
+</div>
+
+<div id="totp-panel" class="admin-subpanel" role="tabpanel" aria-labelledby="totp-subtab" hidden>
+<section><h2>TOTP 动态验证码</h2>
+<div id="totp-status"></div>
+<div id="totp-enroll" hidden>
+  <div id="totp-svg"></div>
+  <p class="muted" id="totp-secret"></p>
+  <form id="totp-confirm-f">
+    <input name="code" placeholder="输入认证器当前 6 位验证码" required inputmode="numeric">
+    <button type="submit" class="save-button">确认开通</button>
+  </form>
+</div>
+</section>
+</div>
+</div>
+
+<div id="apps-panel" class="admin-panel" role="tabpanel" aria-labelledby="apps-tab">
+<section><div class="section-heading app-heading">
+  <h2>应用（OIDC 客户端）</h2>
+  <button type="button" id="cl-add" class="compact-action">新增应用</button>
+</div>
+<details class="oidc-config-hint">
+  <summary>查看 OIDC 配置地址</summary>
+  <dl id="oidc-config-list" class="oidc-config-list">
+    <div><dt>Issuer</dt><dd><code id="oidc-issuer" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 Issuer 地址"></code></dd></div>
+    <div><dt>Discovery</dt><dd><code id="oidc-discovery" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 Discovery 地址"></code></dd></div>
+    <div><dt>Authorize</dt><dd><code id="oidc-authorize" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 Authorize 地址"></code></dd></div>
+    <div><dt>Token</dt><dd><code id="oidc-token" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 Token 地址"></code></dd></div>
+    <div><dt>UserInfo</dt><dd><code id="oidc-userinfo" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 UserInfo 地址"></code></dd></div>
+    <div><dt>JWKS</dt><dd><code id="oidc-jwks" class="oidc-copy-link" role="button" tabindex="0" title="点击复制 JWKS 地址"></code></dd></div>
+  </dl>
+</details>
+<p class="muted" id="cl-new-id"></p>
+<table id="cl-list"></table>
+<dialog id="cl-new" class="edit-dialog" aria-labelledby="cl-new-title">
+  <div class="dialog-heading">
+    <div>
+      <p class="eyebrow">NEW CLIENT</p>
+      <h2 id="cl-new-title">新增应用</h2>
+    </div>
+    <button type="button" id="cl-new-close" class="dialog-close" aria-label="关闭新增窗口">×</button>
+  </div>
+  <form id="cl-f">
+    <input name="name" placeholder="应用名称" required>
+    <div id="redirect-uris" class="redirect-uri-list" aria-label="回调地址">
+      <div class="redirect-uri-row">
+        <input name="uris" placeholder="回调地址 redirect_uri" type="url" required>
+        <button type="button" class="field-action uri-add" title="增加回调地址" aria-label="增加回调地址">+</button>
+        <button type="button" class="field-action uri-remove" title="删除回调地址" aria-label="删除回调地址">−</button>
+      </div>
+    </div>
+    <div class="secret-field">
+      <input name="secret" placeholder="client_secret（可选）" autocomplete="off">
+      <button type="button" id="cl-secret-random" class="field-action">随机生成</button>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" id="cl-new-cancel" class="muted-btn">取消</button>
+      <button type="submit" class="save-button">创建应用</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="cl-edit" class="edit-dialog" aria-labelledby="cl-edit-title">
+  <div class="dialog-heading">
+    <div>
+      <p class="eyebrow">CLIENT SETTINGS</p>
+      <h2 id="cl-edit-title">编辑应用</h2>
+    </div>
+    <button type="button" id="cl-ec" class="dialog-close" aria-label="关闭编辑窗口">×</button>
+  </div>
+  <form id="cl-ef">
+    <input type="hidden" name="id">
+    <input name="name" placeholder="应用名称" required>
+    <div class="dialog-actions">
+      <button type="button" id="cl-cancel" class="muted-btn">取消</button>
+      <button type="submit" class="save-button">保存更改</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="cl-uri-edit" class="edit-dialog" aria-labelledby="cl-uri-edit-title">
+  <div class="dialog-heading">
+    <div>
+      <p class="eyebrow">REDIRECT URI SETTINGS</p>
+      <h2 id="cl-uri-edit-title">编辑回调地址</h2>
+    </div>
+    <button type="button" id="cl-uri-ec" class="dialog-close" aria-label="关闭编辑窗口">×</button>
+  </div>
+  <form id="cl-uri-f">
+    <input type="hidden" name="id">
+    <div id="edit-redirect-uris" class="redirect-uri-list" aria-label="回调地址"></div>
+    <div class="dialog-actions">
+      <button type="button" id="cl-uri-cancel" class="muted-btn">取消</button>
+      <button type="submit" class="save-button">保存回调地址</button>
+    </div>
+  </form>
+</dialog>
+</section>
+</div>
+
+<div id="profile-panel" class="admin-panel" role="tabpanel" aria-labelledby="profile-tab" hidden>
+<div id="profile-view" class="profile-subpanel">
+<section>
+  <div class="section-heading profile-heading">
+    <div>
+      <h2>个人信息</h2>
+      <p class="muted">这些信息会用于 OIDC 的个人资料和邮箱声明。</p>
+    </div>
+    <button type="button" id="profile-edit" class="compact-action">修改</button>
+  </div>
+  <div class="profile-view">
+    <div class="profile-field"><span>Subject</span><strong id="profile-subject"></strong></div>
+    <div class="profile-field"><span>显示名</span><strong id="profile-display-name"></strong></div>
+    <div class="profile-field"><span>邮箱</span><strong id="profile-email" class="muted"></strong></div>
+  </div>
+</section>
+</div>
+<div id="profile-edit-panel" class="profile-subpanel" hidden>
+<section>
+  <div class="profile-edit-toolbar">
+    <button type="button" id="profile-back" class="step-back">← 返回</button>
+    <button type="submit" form="profile-f" class="save-button profile-save">保存信息</button>
+  </div>
+  <div class="section-heading profile-heading">
+    <div>
+      <p class="eyebrow">PROFILE SETTINGS</p>
+      <h2>修改个人信息</h2>
+      <p class="muted">保存后，OIDC 应用读取到的资料会同步更新。</p>
+    </div>
+  </div>
+  <form id="profile-f">
+    <input name="display_name" placeholder="显示名" maxlength="80" required autocomplete="name">
+    <input name="email" type="email" placeholder="邮箱（可选）" maxlength="254" autocomplete="email">
+  </form>
+  <p id="profile-msg" class="err profile-form-message"></p>
+</section>
+</div>
+</div>
+
+<dialog id="action-dialog" class="action-dialog" aria-labelledby="action-dialog-title">
+  <p class="eyebrow" id="action-dialog-eyebrow">CONFIRM ACTION</p>
+  <h2 id="action-dialog-title">确认操作</h2>
+  <p id="action-dialog-message" class="muted"></p>
+  <form id="action-dialog-form">
+    <input id="action-dialog-input" type="text" autocomplete="off">
+    <div class="dialog-actions">
+      <button type="button" id="action-dialog-cancel" class="muted-btn">取消</button>
+      <button type="submit" id="action-dialog-confirm">确认</button>
+    </div>
+  </form>
+</dialog>
+
+<p id="msg" class="err"></p>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const msg = $("msg");
+const ERR = {
+  bad_password: "当前密码错误",
+  weak_password: "新密码太短（至少 8 位）",
+  bad_totp: "验证码错误，未开通",
+  invalid_display_name: "显示名不能为空且不能超过 80 个字符",
+  invalid_email: "请输入有效的邮箱地址",
+};
+let state = { identity: {}, passkeys: [], clients: [], oidc: {}, totp_enabled: false };
+function note(t) { msg.textContent = t || ""; }
+
+// —— 通用确认对话框 ——
+const actionDialog = $("action-dialog");
+const actionForm = $("action-dialog-form");
+const actionInput = $("action-dialog-input");
+const actionConfirm = $("action-dialog-confirm");
+const actionCancel = $("action-dialog-cancel");
+let finishAction = null;
+function finishActionDialog(result) {
+  if (!finishAction) return;
+  const resolve = finishAction;
+  finishAction = null;
+  actionDialog.close();
+  resolve(result);
+}
+function askAction({ eyebrow = "CONFIRM ACTION", title, message, placeholder = "", value = "", confirmText = "确认", input = false, cancel = true, danger = false }) {
+  return new Promise((resolve) => {
+    finishAction = resolve;
+    $("action-dialog-eyebrow").textContent = eyebrow;
+    $("action-dialog-title").textContent = title;
+    $("action-dialog-message").textContent = message;
+    actionInput.hidden = !input;
+    actionInput.required = input;
+    actionInput.placeholder = placeholder;
+    actionInput.value = value;
+    actionConfirm.textContent = confirmText;
+    actionConfirm.classList.toggle("dialog-danger", danger);
+    actionCancel.hidden = !cancel;
+    actionDialog.showModal();
+    (input ? actionInput : actionConfirm).focus();
+  });
+}
+actionForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (actionInput.hidden) finishActionDialog(true);
+  else if (actionInput.value.trim()) finishActionDialog(actionInput.value.trim());
+});
+actionCancel.addEventListener("click", () => finishActionDialog(null));
+actionDialog.addEventListener("cancel", (e) => { e.preventDefault(); finishActionDialog(null); });
+
+// —— 标签切换 ——
+const tabs = [...document.querySelectorAll(".admin-tab")];
+const panels = [...document.querySelectorAll(".admin-panel")];
+function selectTab(name) {
+  tabs.forEach((tab) => {
+    const active = tab.dataset.tab === name;
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+    tab.tabIndex = active ? 0 : -1;
+  });
+  panels.forEach((panel) => { panel.hidden = panel.id !== name + "-panel"; });
+}
+tabs.forEach((tab, index) => {
+  tab.addEventListener("click", () => selectTab(tab.dataset.tab));
+  tab.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    tabs[(index + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length].focus();
+  });
+});
+
+const subtabs = [...document.querySelectorAll(".admin-subtab")];
+const subpanels = [...document.querySelectorAll(".admin-subpanel")];
+function selectSubtab(name) {
+  subtabs.forEach((tab) => {
+    const active = tab.dataset.subtab === name;
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+    tab.tabIndex = active ? 0 : -1;
+  });
+  subpanels.forEach((panel) => { panel.hidden = panel.id !== name + "-panel"; });
+}
+subtabs.forEach((tab, index) => {
+  tab.addEventListener("click", () => selectSubtab(tab.dataset.subtab));
+  tab.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    subtabs[(index + (e.key === "ArrowRight" ? 1 : -1) + subtabs.length) % subtabs.length].focus();
+  });
+});
+
+// —— 回调地址编辑 ——
+const redirectUris = $("redirect-uris");
+const editRedirectUris = $("edit-redirect-uris");
+function updateUriRemoveButtons(list) {
+  const rows = [...list.querySelectorAll(".redirect-uri-row")];
+  rows.forEach((row) => { row.querySelector(".uri-remove").disabled = rows.length === 1; });
+}
+function addRedirectUri(list, value = "") {
+  const row = document.createElement("div");
+  row.className = "redirect-uri-row";
+  row.innerHTML = `<input name="uris" placeholder="回调地址 redirect_uri" type="url" required value="${esc(value)}"><button type="button" class="field-action uri-add" title="增加回调地址" aria-label="增加回调地址">+</button><button type="button" class="field-action uri-remove" title="删除回调地址" aria-label="删除回调地址">−</button>`;
+  list.append(row);
+  updateUriRemoveButtons(list);
+  row.querySelector("input").focus();
+}
+function resetRedirectUris(list, values = [""]) {
+  list.innerHTML = "";
+  values.forEach((value) => addRedirectUri(list, value));
+  updateUriRemoveButtons(list);
+}
+function bindRedirectUriList(list) {
+  list.addEventListener("click", (e) => {
+    const button = e.target.closest("button");
+    if (!button) return;
+    if (button.classList.contains("uri-add")) addRedirectUri(list);
+    if (button.classList.contains("uri-remove") && list.children.length > 1) {
+      button.closest(".redirect-uri-row").remove();
+      updateUriRemoveButtons(list);
+    }
+  });
+  updateUriRemoveButtons(list);
+}
+bindRedirectUriList(redirectUris);
+bindRedirectUriList(editRedirectUris);
+
+// —— 应用创建 ——
+$("cl-add").addEventListener("click", () => {
+  $("cl-f").reset();
+  resetRedirectUris(redirectUris);
+  $("cl-new").showModal();
+  $("cl-f").elements.namedItem("name").focus();
+});
+const secretGroups = ["ABCDEFGHJKLMNPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "23456789", "-_.~"];
+function secureRandomIndex(length) { return crypto.getRandomValues(new Uint32Array(1))[0] % length; }
+function makeClientSecret() {
+  const chars = secretGroups.map((group) => group[secureRandomIndex(group.length)]);
+  const alphabet = secretGroups.join("");
+  while (chars.length < 32) chars.push(alphabet[secureRandomIndex(alphabet.length)]);
+  for (let index = chars.length - 1; index > 0; index--) {
+    const swapIndex = secureRandomIndex(index + 1);
+    [chars[index], chars[swapIndex]] = [chars[swapIndex], chars[index]];
+  }
+  return chars.join("");
+}
+$("cl-secret-random").addEventListener("click", () => {
+  const secret = $("cl-f").elements.namedItem("secret");
+  secret.value = makeClientSecret();
+  secret.select();
+});
+$("cl-new-cancel").addEventListener("click", () => { $("cl-new").close(); });
+$("cl-new-close").addEventListener("click", () => { $("cl-new").close(); });
+
+$("pw-f").addEventListener("submit", async (e) => {
+  e.preventDefault(); note();
+  try {
+    await api("/api/v1/admin/password", { old_password: e.target.old.value, new_password: e.target.nw.value });
+    await askAction({ eyebrow: "PASSWORD UPDATED", title: "密码已修改", message: "请使用新密码重新登录。", confirmText: "知道了", cancel: false });
+    location.href = "/login";
+  } catch (err) { note(ERR[err.message] || "失败：" + err.message); }
+});
+
+function profileNote(t) { $("profile-msg").textContent = t || ""; }
+function showProfileView() {
+  $("profile-view").hidden = false;
+  $("profile-edit-panel").hidden = true;
+}
+$("profile-edit").addEventListener("click", () => {
+  note(); profileNote();
+  $("profile-view").hidden = true;
+  $("profile-edit-panel").hidden = false;
+  $("profile-f").display_name.focus();
+});
+$("profile-back").addEventListener("click", () => { note(); profileNote(); showProfileView(); });
+
+$("profile-f").addEventListener("submit", async (e) => {
+  e.preventDefault(); note(); profileNote();
+  try {
+    await api("/api/v1/admin/profile", {
+      display_name: e.target.display_name.value,
+      email: e.target.email.value,
+    });
+    profileNote("个人信息已保存");
+    showProfileView();
+    refresh();
+  } catch (err) { profileNote(ERR[err.message] || "失败：" + err.message); }
+});
+
+// —— Passkey ——
+
+$("pk-add").addEventListener("click", async () => {
+  note();
+  if (!window.PublicKeyCredential || !navigator.credentials) {
+    note("当前浏览器不支持 Passkey，请使用最新版浏览器。");
+    return;
+  }
+  const name = await askAction({ eyebrow: "NEW PASSKEY", title: "注册新通行密钥", message: "为这个设备设置一个容易识别的名称。", placeholder: "例如：MacBook 指纹", confirmText: "注册", input: true });
+  if (!name) return;
+  const button = $("pk-add");
+  button.disabled = true;
+  try {
+    const opt = await api("/api/v1/admin/passkeys/options");
+    note("请在系统弹窗中完成 Passkey 注册；如果弹窗没有出现，请检查浏览器或设备验证。");
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
+    let cred;
+    try {
+      cred = await navigator.credentials.create({ publicKey: preflight(opt.options), signal: controller.signal });
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (!cred) return;
+    await api("/api/v1/admin/passkeys", {
+      challengeId: opt.challengeId,
+      name: name,
+      response: {
+        id: cred.id, rawId: bufToB64u(cred.rawId), type: cred.type,
+        clientExtensionResults: cred.getClientExtensionResults(),
+        response: {
+          clientDataJSON: bufToB64u(cred.response.clientDataJSON),
+          attestationObject: bufToB64u(cred.response.attestationObject),
+          transports: cred.response.getTransports ? cred.response.getTransports() : [],
+        },
+      },
+    });
+    refresh();
+  } catch (err) {
+    note(err.name === "AbortError" ? "Passkey 注册等待超时，请重试。" : "Passkey 注册失败：" + err.message);
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// —— TOTP ——
+$("totp-status").addEventListener("click", async (e) => {
+  if (e.target.id === "totp-on") {
+    note();
+    try {
+      const d = await api("/api/v1/admin/totp/enroll");
+      $("totp-enroll").hidden = false;
+      $("totp-svg").innerHTML = d.svg;
+      $("totp-secret").textContent = "手动输入密钥：" + d.secret;
+    } catch (err) { note("失败：" + err.message); }
+  } else if (e.target.id === "totp-off") {
+    note();
+    if (await askAction({ eyebrow: "DISABLE TOTP", title: "关闭 TOTP？", message: "关闭后登录仅需密码或通行密钥。", confirmText: "关闭 TOTP", danger: true })) {
+      try { await apiDelete("/api/v1/admin/totp"); refresh(); } catch (err) { note("失败：" + err.message); }
+    }
+  }
+});
+
+$("totp-confirm-f").addEventListener("submit", async (e) => {
+  e.preventDefault(); note();
+  try {
+    await api("/api/v1/admin/totp/confirm", { code: e.target.code.value.trim() });
+    $("totp-enroll").hidden = true;
+    refresh();
+  } catch (err) { note(ERR[err.message] || "失败：" + err.message); }
+});
+
+// —— 列表交互 ——
+$("pk-list").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  note();
+  try {
+    if (btn.dataset.rename) {
+      const name = await askAction({ eyebrow: "RENAME PASSKEY", title: "修改通行密钥名称", message: "请输入新的设备名称。", placeholder: "例如：办公室电脑", confirmText: "保存", input: true });
+      if (name) { await apiPatch(`/api/v1/admin/passkeys/${btn.dataset.rename}`, { name }); refresh(); }
+    } else if (btn.dataset.del) {
+      if (await askAction({ eyebrow: "REMOVE PASSKEY", title: "删除通行密钥？", message: "删除后，这台设备将无法再使用 Passkey 登录。", confirmText: "删除", danger: true })) { await apiDelete(`/api/v1/admin/passkeys/${btn.dataset.del}`); refresh(); }
+    }
+  } catch (err) { note("失败：" + err.message); }
+});
+
+$("cl-list").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  note();
+  try {
+    if (btn.dataset.copyClientId) {
+      await navigator.clipboard.writeText(btn.dataset.copyClientId);
+      btn.textContent = "✓";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = "⧉"; btn.classList.remove("copied"); }, 1200);
+    } else if (btn.dataset.edit) {
+      const cl = state.clients.find((x) => x.id === btn.dataset.edit);
+      if (!cl) return;
+      const form = $("cl-ef");
+      form.elements.namedItem("id").value = cl.id;
+      form.elements.namedItem("name").value = cl.name;
+      $("cl-edit").showModal();
+      form.elements.namedItem("name").focus();
+    } else if (btn.dataset.editUris) {
+      const cl = state.clients.find((x) => x.id === btn.dataset.editUris);
+      if (!cl) return;
+      $("cl-uri-f").elements.namedItem("id").value = cl.id;
+      resetRedirectUris(editRedirectUris, cl.redirect_uris);
+      $("cl-uri-edit").showModal();
+      editRedirectUris.querySelector("input").focus();
+    } else if (btn.dataset.del) {
+      if (await askAction({ eyebrow: "REMOVE CLIENT", title: "删除这个应用？", message: "删除后，该应用将无法再通过 uni-auth 登录。", confirmText: "删除应用", danger: true })) {
+        await apiDelete(`/api/v1/admin/clients/${btn.dataset.del}`);
+        refresh();
+      }
+    }
+  } catch (err) { note("失败：" + err.message); }
+});
+
+$("cl-f").addEventListener("submit", async (e) => {
+  e.preventDefault(); note();
+  try {
+    const form = e.currentTarget;
+    const d = await api("/api/v1/admin/clients", {
+      name: form.elements.namedItem("name").value,
+      redirect_uris: [...redirectUris.querySelectorAll("input[name=uris]")].map((input) => input.value.trim()).filter(Boolean),
+      client_secret: form.elements.namedItem("secret").value,
+    });
+    $("cl-new-id").textContent = "已创建，client_id：" + d.client_id + "（请保存到应用配置）";
+    e.target.reset();
+    $("cl-new").close();
+    refresh();
+  } catch (err) { note("失败：" + err.message); }
+});
+
+$("cl-ef").addEventListener("submit", async (e) => {
+  e.preventDefault(); note();
+  try {
+    const form = e.currentTarget;
+    await apiPatch(`/api/v1/admin/clients/${form.elements.namedItem("id").value}`, {
+      name: form.elements.namedItem("name").value,
+    });
+    $("cl-edit").close();
+    refresh();
+  } catch (err) { note("失败：" + err.message); }
+});
+$("cl-uri-f").addEventListener("submit", async (e) => {
+  e.preventDefault(); note();
+  try {
+    const form = e.currentTarget;
+    await apiPatch(`/api/v1/admin/clients/${form.elements.namedItem("id").value}`, {
+      redirect_uris: [...editRedirectUris.querySelectorAll("input[name=uris]")].map((input) => input.value.trim()).filter(Boolean),
+    });
+    $("cl-uri-edit").close();
+    refresh();
+  } catch (err) { note("失败：" + err.message); }
+});
+$("cl-cancel").addEventListener("click", () => { $("cl-edit").close(); });
+$("cl-ec").addEventListener("click", () => { $("cl-edit").close(); });
+$("cl-uri-cancel").addEventListener("click", () => { $("cl-uri-edit").close(); });
+$("cl-uri-ec").addEventListener("click", () => { $("cl-uri-edit").close(); });
+
+$("lo").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  await fetch("/api/v1/session", { method: "DELETE" });
+  location.href = "/login";
+});
+
+// —— 辅助请求 ——
+async function apiPatch(path, body) {
+  return requestJson(path, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(body || {}) });
+}
+async function apiDelete(path) {
+  return requestJson(path, { method: "DELETE" });
+}
+
+// —— 渲染 ——
+function fmtTime(value) {
+  return value ? new Date(value).toLocaleString() : "未使用";
+}
+async function refresh() {
+  const st = await requestJson("/api/v1/admin/overview");
+  state = st;
+
+  $("profile-subject").textContent = st.identity.subject;
+  $("profile-display-name").textContent = st.identity.display_name;
+  $("profile-email").textContent = st.identity.email || "（未配置）";
+  $("profile-f").display_name.value = st.identity.display_name === "管理员" ? "" : st.identity.display_name;
+  $("profile-f").email.value = st.identity.email || "";
+
+  const ids = ["issuer", "discovery", "authorize", "token", "userinfo", "jwks"];
+  for (const id of ids) {
+    const el = $("oidc-" + id);
+    const value = st.oidc[id];
+    el.textContent = value;
+    el.dataset.value = value;
+  }
+
+  $("totp-status").innerHTML = st.totp_enabled
+    ? '<p class="muted">TOTP 已启用。登录时需要输入动态验证码。</p><button type="button" id="totp-off" class="muted-btn">关闭 TOTP</button>'
+    : '<p class="muted">TOTP 未启用。启用后登录将强制两步验证。</p><button type="button" id="totp-on" class="save-button">启用 TOTP</button>';
+
+  $("pk-list").innerHTML = st.passkeys.length
+    ? '<tr><th>名称</th><th>创建时间</th><th>最近使用</th><th></th></tr>' +
+      st.passkeys
+        .map(
+          (p) =>
+            `<tr><td>${esc(p.name)}</td><td>${esc(fmtTime(p.created_at))}</td><td>${esc(fmtTime(p.last_used_at))}</td>` +
+            `<td class="table-actions"><button type="button" data-rename="${p.id}">改名</button><button type="button" data-del="${p.id}">删除</button></td></tr>`
+        )
+        .join("")
+    : '<tr><td class="muted">尚未注册 Passkey</td></tr>';
+
+  $("cl-list").innerHTML = st.clients.length
+    ? '<tr><th>名称</th><th>Client ID</th><th>回调地址</th><th>Secret</th><th></th></tr>' +
+      st.clients
+        .map(
+          (c) =>
+            `<tr><td>${esc(c.name)}</td>` +
+            `<td class="client-id-cell"><code title="${esc(c.client_id)}">${esc(c.client_id)}</code><button type="button" class="copy-button" data-copy-client-id="${esc(c.client_id)}" title="复制 Client ID">⧉</button></td>` +
+            `<td>${c.redirect_uris.map((u) => `<code>${esc(u)}</code>`).join("<br>")}</td>` +
+            `<td class="secret-status-cell"><span class="secret-status ${c.has_secret ? "secret-status-present" : "secret-status-absent"}" title="${c.has_secret ? "已设置" : "未设置"}">${c.has_secret ? "✓" : "×"}</span></td>` +
+            `<td class="table-actions"><button type="button" data-edit="${c.id}">改名</button><button type="button" data-edit-uris="${c.id}">回调</button><button type="button" data-del="${c.id}">删除</button></td></tr>`
+        )
+        .join("")
+    : '<tr><td class="muted">尚未创建应用</td></tr>';
+}
+
+$("oidc-config-list").addEventListener("click", async (e) => {
+  const link = e.target.closest(".oidc-copy-link");
+  if (!link) return;
+  try {
+    await navigator.clipboard.writeText(link.dataset.value || link.textContent);
+    link.classList.add("copied");
+    setTimeout(() => link.classList.remove("copied"), 1200);
+  } catch { note("复制失败，请手动复制地址"); }
+});
+
+refresh().catch((err) => note("加载失败：" + err.message));
+</script>
+</body>
+</html>
+
+
+
+

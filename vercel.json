@@ -1,0 +1,27 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run typecheck && npm run migrate",
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 30,
+      "includeFiles": "src/views/html/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/index.ts" },
+    { "source": "/api/:path*", "destination": "/api/index.ts" },
+    { "source": "/oauth/:path*", "destination": "/api/index.ts" },
+    { "source": "/.well-known/:path*", "destination": "/api/index.ts" },
+    { "source": "/setup", "destination": "/api/index.ts" },
+    { "source": "/login", "destination": "/api/index.ts" },
+    { "source": "/admin", "destination": "/api/index.ts" },
+    { "source": "/auth", "destination": "/api/index.ts" },
+    { "source": "/auth/:path*", "destination": "/api/index.ts" },
+    { "source": "/authorize", "destination": "/api/index.ts" },
+    { "source": "/token", "destination": "/api/index.ts" },
+    { "source": "/userinfo", "destination": "/api/index.ts" },
+    { "source": "/jwks", "destination": "/api/index.ts" },
+    { "source": "/confirm", "destination": "/api/index.ts" },
+    { "source": "/health", "destination": "/api/index.ts" }
+  ]
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>确认登录 · 大一统登录</title>
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="page-confirm">
+<main>
+<div>
+  <p class="eyebrow">AUTHORIZATION REQUEST</p>
+  <h1>确认登录</h1>
+  <p><strong id="client-name">…</strong> 正在请求登录，并将获得以下权限：</p>
+  <ul id="scopes"></ul>
+  <div class="confirm-actions">
+    <form id="no"><button type="submit" class="muted-btn">取消</button></form>
+    <form id="ok"><button type="submit" class="save-button">确认登录</button></form>
+  </div>
+  <p id="msg" class="err"></p>
+</div>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const REQ = new URLSearchParams(location.search).get("req");
+const SCOPE_LABELS = { openid: "确认你的身份", profile: "读取你的资料", email: "读取你的邮箱" };
+
+async function load() {
+  try {
+    const info = await requestJson(`/oauth/consent/info?req=${encodeURIComponent(REQ)}`);
+    $("client-name").textContent = info.clientName;
+    $("scopes").innerHTML = info.scopes.map((sc) => `<li>${esc(SCOPE_LABELS[sc] ?? sc)}</li>`).join("");
+  } catch (err) {
+    $("msg").textContent = "无法加载登录请求：" + err.message;
+  }
+}
+
+async function send(path) {
+  try {
+    const data = await api(path, { req: REQ });
+    if (data.redirect) location.href = data.redirect;
+  } catch (err) {
+    $("msg").textContent = "失败：" + err.message;
+  }
+}
+$("ok").addEventListener("submit", (e) => { e.preventDefault(); send("/oauth/consent/approve"); });
+$("no").addEventListener("submit", (e) => { e.preventDefault(); send("/oauth/consent/deny"); });
+load();
+</script>
+</body>
+</html>

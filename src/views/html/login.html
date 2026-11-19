@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 大一统登录</title>
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="page-auth">
+<main>
+<form id="f">
+  <div id="password-step" class="auth-step">
+    <p class="eyebrow">PRIVATE IDENTITY GATEWAY</p>
+    <h1>欢迎回来</h1>
+    <p class="muted">使用管理员凭据进入你的身份控制台。</p>
+    <div class="login-mode" role="radiogroup" aria-label="登录有效期">
+      <label class="login-mode-option">
+        <input type="radio" name="remember" value="0" checked>
+        <span class="login-mode-title">单次登录</span>
+        <span class="login-mode-desc">仅在浏览器关闭前生效</span>
+      </label>
+      <label class="login-mode-option">
+        <input type="radio" name="remember" value="1">
+        <span class="login-mode-title">永久登录</span>
+        <span class="login-mode-desc">手动退出前无需重新登录</span>
+      </label>
+    </div>
+    <input type="password" name="password" placeholder="密码" required autocomplete="current-password">
+    <button type="submit">登录</button>
+    <button type="button" id="passkey-btn">使用 Passkey 登录</button>
+  </div>
+  <div id="totp" class="auth-step auth-step-totp" hidden>
+    <button type="button" id="back-password" class="step-back">← 返回</button>
+    <p class="eyebrow">SECOND FACTOR</p>
+    <h1>验证你的身份</h1>
+    <p class="muted">打开认证器应用，输入当前显示的 6 位动态验证码。</p>
+    <input type="text" name="totp" placeholder="6 位动态验证码" inputmode="numeric" autocomplete="one-time-code">
+    <button type="submit" id="totp-btn">验证并继续</button>
+  </div>
+  <p id="msg" class="err"></p>
+</form>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const PARAMS = new URLSearchParams(location.search);
+const REQ = PARAMS.get("req");
+const RETURN_TO_PARAM = PARAMS.get("return_to");
+const RETURN_TO = RETURN_TO_PARAM && RETURN_TO_PARAM.startsWith("/") && !RETURN_TO_PARAM.startsWith("//") ? RETURN_TO_PARAM : null;
+const EXPIRED = PARAMS.get("expired") === "1";
+const ERR = {
+  bad_password: "密码错误",
+  locked: "失败次数过多，请 15 分钟后再试",
+  bad_totp: "动态验证码错误",
+  no_passkeys: "尚未注册任何 Passkey",
+  unknown_credential: "未知的 Passkey",
+  verification_failed: "Passkey 校验失败",
+  bad_challenge: "挑战已过期，请重试",
+  bad_origin: "请求来源校验失败，请刷新页面后重试",
+};
+function authDone() {
+  location.href = RETURN_TO || (REQ ? "/oauth/consent?req=" + encodeURIComponent(REQ) : "/admin");
+}
+function showTotpStep() {
+  $("password-step").hidden = true;
+  $("totp").hidden = false;
+  $("totp").querySelector("input").focus();
+}
+function showPasswordStep() {
+  $("totp").hidden = true;
+  $("password-step").hidden = false;
+  $("password-step").querySelector('input[name="password"]').focus();
+}
+function rememberChecked() {
+  const el = $("f").querySelector('input[name="remember"]:checked');
+  return el ? el.value === "1" : false;
+}
+
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("msg").textContent = "";
+  const needTotp = !$("totp").hidden;
+  try {
+    const data = needTotp
+      ? await api("/api/v1/session/totp", { code: e.target.totp.value.trim() })
+      : await api("/api/v1/session/password", { password: e.target.password.value, remember: rememberChecked() });
+    if (data.requires_totp) {
+      showTotpStep();
+      return;
+    }
+    if (data.ok) authDone();
+  } catch (err) {
+    $("msg").textContent = ERR[err.message] || "失败：" + err.message;
+  }
+});
+
+if (EXPIRED) $("msg").textContent = "登录已过期，请重新登录";
+
+$("back-password").addEventListener("click", () => {
+  $("msg").textContent = "";
+  showPasswordStep();
+});
+
+$("passkey-btn").addEventListener("click", async () => {
+  $("msg").textContent = "";
+  const optRes = await fetch("/api/v1/session/passkey/options", { method: "POST" });
+  const optData = await optRes.json().catch(() => ({}));
+  if (!optRes.ok) { $("msg").textContent = ERR[optData.error] || "失败：" + optData.error; return; }
+  let cred;
+  try {
+    cred = await navigator.credentials.get({ publicKey: preflight(optData.options) });
+  } catch (err) {
+    $("msg").textContent = "Passkey 登录已取消或失败";
+    return;
+  }
+  if (!cred) return;
+  try {
+    const data = await api("/api/v1/session/passkey/verify", {
+      challengeId: optData.challengeId,
+      remember: rememberChecked(),
+      response: {
+        id: cred.id,
+        rawId: bufToB64u(cred.rawId),
+        type: cred.type,
+        clientExtensionResults: cred.getClientExtensionResults(),
+        response: {
+          clientDataJSON: bufToB64u(cred.response.clientDataJSON),
+          authenticatorData: bufToB64u(cred.response.authenticatorData),
+          signature: bufToB64u(cred.response.signature),
+          userHandle: cred.response.userHandle ? bufToB64u(cred.response.userHandle) : null,
+        },
+      },
+    });
+    if (data.ok) authDone();
+  } catch (err) {
+    $("msg").textContent = ERR[err.message] || "失败：" + err.message;
+  }
+});
+</script>
+</body>
+</html>
