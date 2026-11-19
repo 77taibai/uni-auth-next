@@ -1,5 +1,5 @@
 import request from "supertest";
-import { createApp } from "../src/app.js";
+import { createApp } from "../src/createApp.js";
 import { loadConfig, resetConfigCache } from "../src/config/env.js";
 import { createSession } from "../src/db/repositories/sessionRepository.js";
 import { createClient } from "../src/db/repositories/clientRepository.js";

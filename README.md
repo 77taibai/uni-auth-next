@@ -17,8 +17,8 @@
 uni-auth/
 ├─ api/index.ts               # Vercel 入口，只导出 app
 ├─ src/
-│  ├─ app.ts                  # Express 装配与中间件顺序
-│  ├─ server.ts               # 本地 listen
+│  ├─ createApp.ts             # Express 装配与中间件顺序
+│  ├─ main.ts                  # 本地 listen（dev/start）
 │  ├─ config/                 # env 校验、路径、dotenv
 │  ├─ db/
 │  │  ├─ pool.ts              # pg Pool（模块顶层复用）+ 事务助手
